@@ -1,24 +1,22 @@
 package com.example.gallerybook;
 
-import android.accounts.Account;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
 
 public class MainActivity extends AppCompatActivity {
 
-    BottomNavigationView bottomNavigationView;
-    AlbumsFragment albumsFragment = new AlbumsFragment();
-    AccountFragment accountFragment = new AccountFragment();
+
+    FloatingActionButton addAlbumBtn;
 
 
     @Override
@@ -27,21 +25,12 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        bottomNavigationView = findViewById(R.id.bottom_navbar);
-        getSupportFragmentManager().beginTransaction().replace(R.id.frame_container, albumsFragment).commit();
-        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+        addAlbumBtn = findViewById(R.id.addAlbumFab);
+        addAlbumBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                final int itemId = item.getItemId();
-                if (itemId == R.id.menu_account) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.frame_container, accountFragment).commit();
-                    return true;
-                }
-                if (itemId == R.id.menu_albums) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.frame_container, albumsFragment).commit();
-                    return true;
-                }
-                return true;
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, UploadActivity.class));
+                finish();
             }
         });
     }
