@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.GridView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -73,10 +74,23 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
+            // click upload fab
             uploadFabBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(MainActivity.this, UploadActivity.class);
+                    startActivity(intent);
+                }
+            });
+
+            // click gridItem
+            gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    DataClass selectedData = dataList.get(position);
+                    Intent intent = new Intent(MainActivity.this, GalleryDetailsActivity.class);
+                    intent.putExtra("caption", selectedData.getCaption());
+                    intent.putExtra("imageUrl", selectedData.getImageUrl());
                     startActivity(intent);
                 }
             });
