@@ -1,37 +1,118 @@
 package com.example.gallerybook;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.View;
-
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.GridView;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-
-    FloatingActionButton addAlbumBtn;
-
+    FloatingActionButton uploadFabBtn;
+    private GridView gridView;
+    private ArrayList<DataClass> dataList;
+    private GridAdapter adapter;
+    private DatabaseReference databaseReference;
+    FirebaseAuth firebaseAuth;
+    FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        addAlbumBtn = findViewById(R.id.addAlbumFab);
-        addAlbumBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, UploadActivity.class));
-                finish();
-            }
-        });
+        // init firebase
+        firebaseAuth = FirebaseAuth.getInstance();
+        user = firebaseAuth.getCurrentUser();
+
+        // redirect to login if not authenticated
+        if (user == null) {
+            redirectToLogin();
+        } else {
+            // init views
+            uploadFabBtn = findViewById(R.id.upload_fab_btn);
+            gridView = findViewById(R.id.gridView);
+            dataList = new ArrayList<>();
+            adapter = new GridAdapter(dataList, this);
+            gridView.setAdapter(adapter);
+
+            // init database reference
+            databaseReference = FirebaseDatabase.getInstance().getReference(user.getUid());
+
+            databaseReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    dataList.clear(); // clear the previous list
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        DataClass dataClass = dataSnapshot.getValue(DataClass.class);
+                        if (dataClass != null) {
+                            dataList.add(dataClass);
+                        }
+                    }
+                    adapter.notifyDataSetChanged(); // notify the adapter after data change
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    // handle database error
+                }
+            });
+
+            uploadFabBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(MainActivity.this, UploadActivity.class);
+                    startActivity(intent);
+                }
+            });
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.top_nav_menu, menu);
+        // hide logout menu if user is not authenticated
+        MenuItem userMenuItem = menu.findItem(R.id.menu_user);
+        MenuItem logoutMenuItem = menu.findItem(R.id.menu_logout);
+
+        if (user != null) {
+            // set user display name
+            userMenuItem.setVisible(true);
+            userMenuItem.setTitle("Hi, " + user.getDisplayName());
+
+            // set logout menu as visible
+            logoutMenuItem.setVisible(true);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.menu_logout) {
+            // sign-out current user
+            firebaseAuth.signOut();
+            redirectToLogin();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void redirectToLogin() {
+        startActivity(new Intent(this, LoginActivity.class));
+        finish();
     }
 }

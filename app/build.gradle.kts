@@ -40,7 +40,15 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.firebase.storage)
     implementation(libs.firebase.database)
+    implementation(libs.firebase.database.connection)
+    implementation(libs.firebase.auth)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    implementation(libs.glide)
+    implementation(libs.makeramen)
+    // Import the BoM for the Firebase platform
+    implementation(libs.firebase.bom)
+    implementation(libs.google.firebase.auth)
 }
+apply(plugin = "com.google.gms.google-services")

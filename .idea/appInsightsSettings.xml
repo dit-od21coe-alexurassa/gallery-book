@@ -9,9 +9,9 @@
               <option name="connection">
                 <ConnectionSetting>
                   <option name="appId" value="com.example.gallerybook" />
-                  <option name="mobileSdkAppId" value="1:799709996239:android:0f214959ec9b4ca0a843ba" />
-                  <option name="projectId" value="gallerybook-3283b" />
-                  <option name="projectNumber" value="799709996239" />
+                  <option name="mobileSdkAppId" value="1:722777940726:android:98166c061c78d0094182d7" />
+                  <option name="projectId" value="gallerybook-161e7" />
+                  <option name="projectNumber" value="722777940726" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

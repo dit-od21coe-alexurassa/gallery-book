@@ -1,13 +1,14 @@
 {
   "project_info": {
-    "project_number": "799709996239",
-    "project_id": "gallerybook-3283b",
-    "storage_bucket": "gallerybook-3283b.appspot.com"
+    "project_number": "722777940726",
+    "firebase_url": "https://gallerybook-161e7-default-rtdb.firebaseio.com",
+    "project_id": "gallerybook-161e7",
+    "storage_bucket": "gallerybook-161e7.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:799709996239:android:0f214959ec9b4ca0a843ba",
+        "mobilesdk_app_id": "1:722777940726:android:98166c061c78d0094182d7",
         "android_client_info": {
           "package_name": "com.example.gallerybook"
         }
@@ -15,7 +16,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCUG0BdadExH6-8yDdP18VSGoe2V3SfuZQ"
+          "current_key": "AIzaSyAKGgsZq2Y9L8ue23zG00h5TjR5OLA8Km4"
         }
       ],
       "services": {

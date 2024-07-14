@@ -21,8 +21,8 @@
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:layout_marginTop="20dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/cloud_upload" />
+            android:scaleType="centerCrop"
+            android:src="@drawable/upload_image" />
 
         <ProgressBar
             android:id="@+id/progressBar"

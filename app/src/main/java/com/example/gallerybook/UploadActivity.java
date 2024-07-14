@@ -22,6 +22,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -36,60 +38,75 @@ public class UploadActivity extends AppCompatActivity {
     ImageView uploadImage;
     EditText uploadCaption;
     private Uri imageUri;
-    final private DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("Images");
-    final private StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+    private DatabaseReference dbRef;
+    private StorageReference storageReference;
+    private FirebaseUser authUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload);
 
-        uploadImageBtn = findViewById(R.id.uploadBtn);
-        uploadImage = findViewById(R.id.uploadImage);
-        uploadCaption = findViewById(R.id.uploadCaption);
-        progressBar = findViewById(R.id.progressBar);
-        progressBar.setVisibility(View.INVISIBLE);
+        // set title
+        setTitle("Upload to GalleryBook");
 
-        ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                new ActivityResultCallback<ActivityResult>() {
-                    @Override
-                    public void onActivityResult(ActivityResult result) {
-                        if (result.getResultCode() == Activity.RESULT_OK) {
-                            Intent data = result.getData();
-                            if (data != null && data.getData() != null) {
-                                imageUri = data.getData();
-                                uploadImage.setImageURI(imageUri);
+        // init firebase user
+        authUser = FirebaseAuth.getInstance().getCurrentUser();
+        // check if user is authenticated and redirect to login if not
+        if (authUser == null) {
+            redirectToLogin();
+        } else {
+
+            storageReference = FirebaseStorage.getInstance().getReference(authUser.getUid());
+            dbRef = FirebaseDatabase.getInstance().getReference(authUser.getUid());
+
+            uploadImageBtn = findViewById(R.id.uploadBtn);
+            uploadImage = findViewById(R.id.uploadImage);
+            uploadCaption = findViewById(R.id.uploadCaption);
+            progressBar = findViewById(R.id.progressBar);
+            progressBar.setVisibility(View.INVISIBLE);
+
+            ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
+                    new ActivityResultContracts.StartActivityForResult(),
+                    new ActivityResultCallback<ActivityResult>() {
+                        @Override
+                        public void onActivityResult(ActivityResult result) {
+                            if (result.getResultCode() == Activity.RESULT_OK) {
+                                Intent data = result.getData();
+                                if (data != null && data.getData() != null) {
+                                    imageUri = data.getData();
+                                    uploadImage.setImageURI(imageUri);
+                                } else {
+                                    Toast.makeText(UploadActivity.this, "No Image selected.", Toast.LENGTH_SHORT).show();
+                                }
                             } else {
                                 Toast.makeText(UploadActivity.this, "No Image selected.", Toast.LENGTH_SHORT).show();
                             }
-                        } else {
-                            Toast.makeText(UploadActivity.this, "No Image selected.", Toast.LENGTH_SHORT).show();
                         }
                     }
-                }
-        );
+            );
 
-        uploadImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent photoPicker = new Intent();
-                photoPicker.setAction(Intent.ACTION_GET_CONTENT);
-                photoPicker.setType("image/*");
-                activityResultLauncher.launch(photoPicker);
-            }
-        });
-
-        uploadImageBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (imageUri != null) {
-                    uploadToFirebase(imageUri);
-                } else {
-                    Toast.makeText(UploadActivity.this, "Please select an image", Toast.LENGTH_SHORT).show();
+            uploadImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent photoPicker = new Intent();
+                    photoPicker.setAction(Intent.ACTION_GET_CONTENT);
+                    photoPicker.setType("image/*");
+                    activityResultLauncher.launch(photoPicker);
                 }
-            }
-        });
+            });
+
+            uploadImageBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (imageUri != null) {
+                        uploadToFirebase(imageUri);
+                    } else {
+                        Toast.makeText(UploadActivity.this, "Please select an image", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
     }
 
     void uploadToFirebase(Uri uri) {
@@ -129,9 +146,15 @@ public class UploadActivity extends AppCompatActivity {
         });
     }
 
+
     private String getFileExtension(Uri fileUri) {
         ContentResolver contentResolver = getContentResolver();
         MimeTypeMap mime = MimeTypeMap.getSingleton();
         return mime.getExtensionFromMimeType(contentResolver.getType(fileUri));
+    }
+
+    private void redirectToLogin() {
+        startActivity(new Intent(this, LoginActivity.class));
+        finish();
     }
 }

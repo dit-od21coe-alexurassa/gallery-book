@@ -1,7 +1,17 @@
 package com.example.gallerybook;
 
 public class DataClass {
-    private String imageUrl, caption;
+    private String imageUrl;
+    private String caption;
+
+    // Default constructor required for calls to DataSnapshot.getValue(DataClass.class)
+    public DataClass() {
+    }
+
+    public DataClass(String imageUrl, String caption) {
+        this.imageUrl = imageUrl;
+        this.caption = caption;
+    }
 
     public String getImageUrl() {
         return imageUrl;
@@ -16,11 +26,6 @@ public class DataClass {
     }
 
     public void setCaption(String caption) {
-        this.caption = caption;
-    }
-
-    public DataClass(String imageUrl, String caption) {
-        this.imageUrl = imageUrl;
         this.caption = caption;
     }
 }
