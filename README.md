@@ -15,6 +15,8 @@ This project is created as group work for a class Assignment at **DIT** on a mod
 - User Registration and Authentication
 - Galleries display screen
 - Gallery details screen
+- Uploading Gallery to cloud
+- Logout functionality
 
 ### Significances of using GalleryBook
 --------------------
